@@ -59,7 +59,7 @@ logger = logging.getLogger(__name__)
 
 # switches for old dataset timestamp processing (hard-coded for now)
 _CONVERT_OLD_TIMESTAMPS = False
-_RETURN_OLD_TIMESTAMPS = False
+_RETURN_OLD_TIMESTAMPS = True #False
 
 
 class NWBFileBuilder:
