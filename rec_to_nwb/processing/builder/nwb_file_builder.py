@@ -52,15 +52,14 @@ from rec_to_nwb.processing.validation.preprocessing_validator import Preprocessi
 from rec_to_nwb.processing.validation.task_validator import TaskValidator
 from rec_to_nwb.processing.validation.validation_registrator import ValidationRegistrator
 
-# processing old dataset
-# from rec_to_nwb.processing.builder.originators.old_analog_originator import OldAnalogOriginator
-# from rec_to_nwb.processing.builder.originators.old_dio_originator import OldDioOriginator
-# from rec_to_nwb.processing.builder.originators.old_position_originator import OldPositionOriginator
-# from rec_to_nwb.processing.builder.originators.old_video_files_originator import OldVideoFilesOriginator
 
 path = os.path.dirname(os.path.abspath(__file__))
 logging.config.fileConfig(fname=str(path) + '/../../logging.conf', disable_existing_loggers=False)
 logger = logging.getLogger(__name__)
+
+# switches for old dataset timestamp processing (hard-coded for now)
+_CONVERT_OLD_TIMESTAMPS = False
+_RETURN_OLD_TIMESTAMPS = False
 
 
 class NWBFileBuilder:
@@ -240,8 +239,8 @@ class NWBFileBuilder:
                 self.data_path + "/" + animal_name + "/raw/" + self.date + "/",
                 self.video_path,
                 self.metadata["associated_video_files"],
-                convert_timestamps=False,
-                return_timestamps=False,
+                convert_timestamps=_CONVERT_OLD_TIMESTAMPS,
+                return_timestamps=_RETURN_OLD_TIMESTAMPS,
             )
         else:
             self.video_files_originator = VideoFilesOriginator(
@@ -262,23 +261,22 @@ class NWBFileBuilder:
         if self.process_dio:
             if self.is_old_dataset:
                 self.dio_originator = DioOriginator(self.metadata, self.datasets,
-                                                    convert_timestamps=False)
+                                                    convert_timestamps=_CONVERT_OLD_TIMESTAMPS)
             else:
                 self.dio_originator = DioOriginator(self.metadata, self.datasets)
 
         if self.process_analog:
             if self.is_old_dataset:
                 self.analog_originator = AnalogOriginator(self.datasets, self.metadata,
-                                                    convert_timestamps=False,
-                                                    return_timestamps=False,
-                                                    )
+                                                    convert_timestamps=_CONVERT_OLD_TIMESTAMPS,
+                                                    return_timestamps=_RETURN_OLD_TIMESTAMPS)
             else:
                 self.analog_originator = AnalogOriginator(self.datasets, self.metadata)
 
         if self.is_old_dataset:
             self.position_originator = PositionOriginator(self.datasets, self.metadata,
                                                           self.dataset_names, self.process_pos_timestamps,
-                                                          convert_timestamps=False)
+                                                          convert_timestamps=_CONVERT_OLD_TIMESTAMPS)
         else:
             self.position_originator = PositionOriginator(self.datasets, self.metadata,
                                                           self.dataset_names, self.process_pos_timestamps)
