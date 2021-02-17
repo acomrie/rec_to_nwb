@@ -1,7 +1,13 @@
+import logging.config
+import os
 import numpy as np
 from rec_to_binaries.read_binaries import readTrodesExtractedDataFile
 
 from rec_to_nwb.processing.tools.beartype.beartype import beartype
+
+path = os.path.dirname(os.path.abspath(__file__))
+logging.config.fileConfig(fname=str(path) + '/../../../../logging.conf', disable_existing_loggers=False)
+logger = logging.getLogger(__name__)
 
 
 class FlVideoFilesExtractor:
@@ -32,15 +38,32 @@ class FlVideoFilesExtractor:
         return extracted_video_files
 
     def _get_timestamps(self, video_file):
-        video_timestamps = readTrodesExtractedDataFile(
+        try:
+            video_timestamps = self._read_video_timestamps_hw_sync(video_file)
+            logger.info('Loaded cameraHWSync timestamps for {}'.format(video_file['name'][:-4]))
+            is_old_dataset = False
+        except FileNotFoundError:
+            # old dataset
+            video_timestamps = self._read_video_timestamps_hw_framecount(video_file)
+            logger.info('Loaded cameraHWFrameCount for {} (old dataset)'.format(video_file['name'][:-4]))
+            is_old_dataset = True
+        # the timestamps array from the cam
+        if is_old_dataset or (not self.convert_timestamps):
+            # for now, FORCE turn off convert_timestamps for old dataset
+            return video_timestamps
+        return self._convert_timestamps(video_timestamps)
+
+    def _read_video_timestamps_hw_sync(self, video_file):
+        return readTrodesExtractedDataFile(
                 self.raw_data_path + "/"
                 + video_file["name"][:-4]
                 + "videoTimeStamps.cameraHWSync")['data']['HWTimestamp']
-        # the timestamps array from the cam
-        if not self.convert_timestamps:
-            # optinally turn off convert_timestamps for old dataset
-            return video_timestamps
-        return self._convert_timestamps(video_timestamps)
+
+    def _read_video_timestamps_hw_framecount(self, video_file):
+        return readTrodesExtractedDataFile(
+                self.raw_data_path + "/"
+                + video_file["name"][:-4]
+                + "videoTimeStamps.cameraHWFrameCount")['data']['frameCount']
 
     def _convert_timestamps(self, timestamps):
         #converted_timestamps = np.ndarray(shape=np.shape(timestamps), dtype='float64')
