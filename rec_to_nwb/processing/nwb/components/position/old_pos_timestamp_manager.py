@@ -1,7 +1,7 @@
 import logging.config
 import os
 
-import numpy as np
+# import numpy as np
 import pandas as pd
 from rec_to_binaries.read_binaries import readTrodesExtractedDataFile
 
@@ -24,11 +24,14 @@ class OldPosTimestampManager(TimestampManager):
         position = pd.DataFrame(pos_online['data'])
         return position.time.to_numpy(dtype='int64')
 
-    # override for old dataset only (check!)
+    # override
     def retrieve_real_timestamps(self, dataset_id):
-        timestamps_ids = self.read_timestamps_ids(dataset_id)
-        converted_timestamps = np.ndarray(shape=[len(timestamps_ids), ], dtype="float64")
-        for i, _ in enumerate(timestamps_ids):
-            value = float('nan')  # just a dummy value for now
-            converted_timestamps[i] = value
-        return converted_timestamps
+        # timestamps_ids = self.read_timestamps_ids(dataset_id)
+        # converted_timestamps = np.ndarray(shape=[len(timestamps_ids), ], dtype="float64")
+        # for i, _ in enumerate(timestamps_ids):
+        #     value = float('nan')  # just a dummy value for now
+        #     converted_timestamps[i] = value
+        # return converted_timestamps
+        # not converting timestamps: just return timestamps_ids
+        return TimestampManager.retrieve_real_timestamps(dataset_id,
+                                                    convert_timestamps=False)
