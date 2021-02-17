@@ -56,7 +56,7 @@ from rec_to_nwb.processing.validation.validation_registrator import ValidationRe
 # from rec_to_nwb.processing.builder.originators.old_analog_originator import OldAnalogOriginator
 # from rec_to_nwb.processing.builder.originators.old_dio_originator import OldDioOriginator
 # from rec_to_nwb.processing.builder.originators.old_position_originator import OldPositionOriginator
-from rec_to_nwb.processing.builder.originators.old_video_files_originator import OldVideoFilesOriginator
+# from rec_to_nwb.processing.builder.originators.old_video_files_originator import OldVideoFilesOriginator
 
 path = os.path.dirname(os.path.abspath(__file__))
 logging.config.fileConfig(fname=str(path) + '/../../logging.conf', disable_existing_loggers=False)
@@ -236,10 +236,11 @@ class NWBFileBuilder:
         self.camera_sample_frame_counts_originator = CameraSampleFrameCountsOriginator(
             self.data_path + "/" + animal_name + "/raw/" + self.date + "/")
         if self.is_old_dataset:
-            self.video_files_originator = OldVideoFilesOriginator(
+            self.video_files_originator = VideoFilesOriginator(
                 self.data_path + "/" + animal_name + "/raw/" + self.date + "/",
                 self.video_path,
                 self.metadata["associated_video_files"],
+                return_timestamps=False,
             )
         else:
             self.video_files_originator = VideoFilesOriginator(
