@@ -16,6 +16,7 @@ class OldAnalogOriginator:
         analog_files = AnalogFiles(analog_directories)
         old_analog_manager = OldFlAnalogManager(
             analog_files=analog_files.get_files(),
+            continuous_time_files=self.continuous_time_files
         )
         fl_analog = old_analog_manager.get_analog()
         analog_injector = AnalogInjector(nwb_content)
