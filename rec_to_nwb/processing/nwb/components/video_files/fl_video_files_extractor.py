@@ -8,9 +8,11 @@ class FlVideoFilesExtractor:
 
     @beartype
     def __init__(self, raw_data_path: str, video_files_metadata: list,
+                    convert_timestamps: bool = True,
                     return_timestamps: bool = True):
         self.raw_data_path = raw_data_path
         self.video_files_metadata = video_files_metadata
+        self.convert_timestamps = convert_timestamps
         self.return_timestamps = return_timestamps
 
     def extract_video_files(self):
@@ -35,9 +37,12 @@ class FlVideoFilesExtractor:
                 + video_file["name"][:-4]
                 + "videoTimeStamps.cameraHWSync")['data']['HWTimestamp']
         # the timestamps array from the cam
-        return self.convert_timestamps(video_timestamps)
+        if not self.convert_timestamps:
+            # optinally turn off convert_timestamps for old dataset
+            return video_timestamps
+        return self._convert_timestamps(video_timestamps)
 
-    def convert_timestamps(self, timestamps):
+    def _convert_timestamps(self, timestamps):
         #converted_timestamps = np.ndarray(shape=np.shape(timestamps), dtype='float64')
         converted_timestamps = timestamps / 1E9
         # for i, record in enumerate(timestamps):

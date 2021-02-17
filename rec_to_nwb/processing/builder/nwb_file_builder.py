@@ -240,6 +240,7 @@ class NWBFileBuilder:
                 self.data_path + "/" + animal_name + "/raw/" + self.date + "/",
                 self.video_path,
                 self.metadata["associated_video_files"],
+                convert_timestamps=False,
                 return_timestamps=False,
             )
         else:
