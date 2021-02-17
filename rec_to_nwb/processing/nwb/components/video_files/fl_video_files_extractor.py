@@ -7,26 +7,35 @@ from rec_to_nwb.processing.tools.beartype.beartype import beartype
 class FlVideoFilesExtractor:
 
     @beartype
-    def __init__(self, raw_data_path: str, video_files_metadata: list):
+    def __init__(self, raw_data_path: str, video_files_metadata: list,
+                    return_timestamps: bool = True):
         self.raw_data_path = raw_data_path
         self.video_files_metadata = video_files_metadata
+        self.return_timestamps = return_timestamps
 
     def extract_video_files(self):
         video_files = self.video_files_metadata
         extracted_video_files = []
         for video_file in video_files:
-            timestamps = readTrodesExtractedDataFile(
-                    self.raw_data_path + "/"
-                    + video_file["name"][:-4]
-                    + "videoTimeStamps.cameraHWSync")['data']['HWTimestamp']
-            # the timestamps array from the cam
+            if self.return_timestamps:
+                timestamps = self._get_timestamps(video_file)
+            else:
+                timestamps = np.array([])
             new_fl_video_file = {
                 "name": video_file["name"],
-                "timestamps": self.convert_timestamps(timestamps),
+                "timestamps": timestamps,
                 "device": video_file["camera_id"]
             }
             extracted_video_files.append(new_fl_video_file)
         return extracted_video_files
+
+    def _get_timestamps(self, video_file):
+        video_timestamps = readTrodesExtractedDataFile(
+                self.raw_data_path + "/"
+                + video_file["name"][:-4]
+                + "videoTimeStamps.cameraHWSync")['data']['HWTimestamp']
+        # the timestamps array from the cam
+        return self.convert_timestamps(video_timestamps)
 
     def convert_timestamps(self, timestamps):
         #converted_timestamps = np.ndarray(shape=np.shape(timestamps), dtype='float64')
