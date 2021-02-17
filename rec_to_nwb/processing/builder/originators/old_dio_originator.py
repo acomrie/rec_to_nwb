@@ -5,7 +5,6 @@ from rec_to_nwb.processing.nwb.components.dio.dio_builder import DioBuilder
 from rec_to_nwb.processing.nwb.components.dio.dio_files import DioFiles
 from rec_to_nwb.processing.nwb.components.dio.dio_injector import DioInjector
 from rec_to_nwb.processing.nwb.components.dio.dio_manager import DioManager
-from rec_to_nwb.processing.nwb.components.dio.old_dio_manager import OldDioManager
 
 path = os.path.dirname(os.path.abspath(__file__))
 logging.config.fileConfig(fname=str(path) + '/../../../logging.conf', disable_existing_loggers=False)
@@ -24,11 +23,13 @@ class OldDioOriginator:
         logger.info('DIO: Prepare files')
         dio_files = DioFiles(dio_directories, self.metadata['behavioral_events'])
         logger.info('DIO: Retrieve data')
-        old_dio_manager = OldDioManager(
+        dio_manager = DioManager(
             dio_files=dio_files.get_files(),
             dio_metadata=self.metadata['behavioral_events'],
+            continuous_time_files=self.__get_continuous_time_files(),
+            convert_timestamps=False
         )
-        dio_data = old_dio_manager.get_dio()
+        dio_data = dio_manager.get_dio()
         logger.info('DIO: Building')
         dio_builder = DioBuilder(
             dio_data,
