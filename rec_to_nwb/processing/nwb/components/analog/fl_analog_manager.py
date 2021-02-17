@@ -15,6 +15,8 @@ class FlAnalogManager:
 
         self.analog_files = analog_files
         self.continuous_time_files = continuous_time_files
+        self.convert_timestamps = True
+        self.return_timestamps = True
 
     @beartype
     def get_analog(self) -> FlAnalog:
@@ -26,14 +28,18 @@ class FlAnalogManager:
             all_analog_data.append(
                 FlAnalogExtractor.extract_analog_for_single_dataset(
                     self.analog_files[i],
-                    self.continuous_time_files[i]
+                    self.continuous_time_files[i],
+                    convert_timestamps=self.convert_timestamps
                 )
             )
         merged_epochs = self.__merge_epochs(all_analog_data)
         description = self.__merge_row_description(all_analog_data)
         analog_data = self.__merge_analog_sensors(merged_epochs)
 
-        timestamps = self.__get_timestamps(merged_epochs)
+        if self.return_timestamps:
+            timestamps = self.__get_timestamps(merged_epochs)
+        else
+            timestamps = []
         return FlAnalogBuilder.build(analog_data, timestamps, description)
 
     @staticmethod

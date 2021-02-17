@@ -11,11 +11,13 @@ class OldFlAnalogManager:
 
     @beartype
     def __init__(self, analog_files: list, continuous_time_files: list):
-        ''' continuous_time_files is a list of None's for old dataset '''
         validate_parameters_equal_length(__name__, analog_files, continuous_time_files)
 
         self.analog_files = analog_files
         self.continuous_time_files = continuous_time_files
+        # timestamp processing swidthes for for old dataset
+        self.convert_timestamps = False
+        self.return_timestamps = False
 
     @beartype
     def get_analog(self) -> FlAnalog:
@@ -27,14 +29,18 @@ class OldFlAnalogManager:
             all_analog_data.append(
                 FlAnalogExtractor.extract_analog_for_single_dataset(
                     self.analog_files[i],
-                    self.continuous_time_files[i]
+                    self.continuous_time_files[i],
+                    convert_timestamps=self.convert_timestamps
                 )
             )
         merged_epochs = self.__merge_epochs(all_analog_data)
         description = self.__merge_row_description(all_analog_data)
         analog_data = self.__merge_analog_sensors(merged_epochs)
 
-        timestamps = self.__get_timestamps(merged_epochs)
+        if self.return_timestamps:
+            timestamps = self.__get_timestamps(merged_epochs)
+        else
+            timestamps = []
         return FlAnalogBuilder.build(analog_data, timestamps, description)
 
     @staticmethod
@@ -61,6 +67,8 @@ class OldFlAnalogManager:
         transposed_analog_data = np.ndarray.transpose(merged_analog_sensors)
         return transposed_analog_data
 
-    def __get_timestamps(self, merged_epochs):
-        # for old dataset (check!)
-        return []
+    @classmethod
+    def __get_timestamps(cls, merged_epochs):
+        for analog_sensor in merged_epochs.keys():
+            if 'timestamps' in analog_sensor:
+                return merged_epochs[analog_sensor]
