@@ -10,13 +10,17 @@ from rec_to_nwb.processing.tools.validate_parameters import validate_parameters_
 class FlAnalogManager:
 
     @beartype
-    def __init__(self, analog_files: list, continuous_time_files: list):
+    def __init__(self, analog_files: list,
+                       continuous_time_files: list,
+                       convert_timestamps: bool = True,
+                       return_timestamps: bool = True,
+                       ):
         validate_parameters_equal_length(__name__, analog_files, continuous_time_files)
 
         self.analog_files = analog_files
         self.continuous_time_files = continuous_time_files
-        self.convert_timestamps = True
-        self.return_timestamps = True
+        self.convert_timestamps = convert_timestamps
+        self.return_timestamps = return_timestamps
 
     @beartype
     def get_analog(self) -> FlAnalog:
@@ -38,7 +42,7 @@ class FlAnalogManager:
 
         if self.return_timestamps:
             timestamps = self.__get_timestamps(merged_epochs)
-        else
+        else:
             timestamps = []
         return FlAnalogBuilder.build(analog_data, timestamps, description)
 
