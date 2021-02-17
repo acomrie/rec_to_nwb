@@ -2,7 +2,7 @@ import re
 
 from rec_to_nwb.processing.exceptions.invalid_metadata_exception import InvalidMetadataException
 from rec_to_nwb.processing.nwb.components.position.fl_position_builder import FlPositionBuilder
-from rec_to_nwb.processing.nwb.components.position.old_fl_position_extractor import OldFlPositionExtractor
+from rec_to_nwb.processing.nwb.components.position.fl_position_extractor import FlPositionExtractor
 from rec_to_nwb.processing.tools.beartype.beartype import beartype
 from rec_to_nwb.processing.tools.validate_parameters import validate_parameters_equal_length
 
@@ -16,7 +16,7 @@ class OldFlPositionManager:
         self.dataset_names = dataset_names
         self.process_timestamps = process_timestamps
 
-        self.old_fl_position_extractor = OldFlPositionExtractor(datasets)
+        self.fl_position_extractor = FlPositionExtractor(datasets, convert_timestamps=False)
         self.fl_position_builder = FlPositionBuilder()
 
     @beartype
@@ -24,10 +24,10 @@ class OldFlPositionManager:
         cameras_ids = self.__get_cameras_ids(self.dataset_names, self.metadata)
         meters_per_pixels = self.__get_meters_per_pixels(cameras_ids, self.metadata)
 
-        position_datas = self.old_fl_position_extractor.get_positions()
-        columns_labels = self.old_fl_position_extractor.get_columns_labels()
+        position_datas = self.fl_position_extractor.get_positions()
+        columns_labels = self.fl_position_extractor.get_columns_labels()
         if self.process_timestamps:
-            timestamps = self.old_fl_position_extractor.get_timestamps()
+            timestamps = self.fl_position_extractor.get_timestamps()
 
             validate_parameters_equal_length(__name__, position_datas, columns_labels, timestamps)
 
