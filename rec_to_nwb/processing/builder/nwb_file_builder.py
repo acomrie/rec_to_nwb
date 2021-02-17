@@ -55,7 +55,7 @@ from rec_to_nwb.processing.validation.validation_registrator import ValidationRe
 # processing old dataset
 # from rec_to_nwb.processing.builder.originators.old_analog_originator import OldAnalogOriginator
 from rec_to_nwb.processing.builder.originators.old_dio_originator import OldDioOriginator
-from rec_to_nwb.processing.builder.originators.old_position_originator import OldPositionOriginator
+# from rec_to_nwb.processing.builder.originators.old_position_originator import OldPositionOriginator
 from rec_to_nwb.processing.builder.originators.old_video_files_originator import OldVideoFilesOriginator
 
 path = os.path.dirname(os.path.abspath(__file__))
@@ -273,8 +273,9 @@ class NWBFileBuilder:
                 self.analog_originator = AnalogOriginator(self.datasets, self.metadata)
 
         if self.is_old_dataset:
-            self.position_originator = OldPositionOriginator(self.datasets, self.metadata,
-                                                          self.dataset_names, self.process_pos_timestamps)
+            self.position_originator = PositionOriginator(self.datasets, self.metadata,
+                                                          self.dataset_names, self.process_pos_timestamps,
+                                                          convert_timestamps=False)
         else:
             self.position_originator = PositionOriginator(self.datasets, self.metadata,
                                                           self.dataset_names, self.process_pos_timestamps)
