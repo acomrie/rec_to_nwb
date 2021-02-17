@@ -58,7 +58,7 @@ logging.config.fileConfig(fname=str(path) + '/../../logging.conf', disable_exist
 logger = logging.getLogger(__name__)
 
 # switches for old dataset timestamp processing (hard-coded for now)
-_CONVERT_OLD_TIMESTAMPS = False
+_CONVERT_OLD_TIMESTAMPS = True #False
 _RETURN_OLD_TIMESTAMPS = True #False
 
 
