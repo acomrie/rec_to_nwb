@@ -100,7 +100,11 @@ class PositionOriginator:
         # online tracking can be started or stopped before video is stopped.
         # Additionally, for offline tracking, frames can be skipped if the
         # frame is labeled as bad.
-        video_info = video_info.loc[position_tracking.index.unique()]
+
+        video_info = video_info.loc[position_tracking.index.unique()] 
+        # the unique here is because the position_tracking file can contain duplicates
+        _,rows_ind=np.unique(position_tracking.index, return_index=True)
+        position_tracking=position_tracking.iloc[rows_ind]
         frame_count = np.asarray(video_info.HWframeCount)
         ptp_systime = np.asarray(video_info.HWTimestamp)
 
