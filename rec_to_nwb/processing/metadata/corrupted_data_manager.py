@@ -1,6 +1,5 @@
-import copy
-
-from rec_to_nwb.processing.exceptions.corrupted_data_exception import CorruptedDataException
+from rec_to_nwb.processing.exceptions.corrupted_data_exception import \
+    CorruptedDataException
 from rec_to_nwb.processing.tools.beartype.beartype import beartype
 
 
@@ -51,16 +50,17 @@ class CorruptedDataManager:
     def __get_electrodes_valid_map(ntrode_metadata: list) -> list:
         electrodes_valid_map = []
         for ntrode in ntrode_metadata:
-            bad_channels = [int(bad_channel) for bad_channel in ntrode['bad_channels']]
+            bad_channels = [int(bad_channel)
+                            for bad_channel in ntrode['bad_channels']]
             electrodes_valid_map.extend(
-                [bool(int(channel) not in bad_channels) for channel in ntrode['map']]
+                [bool(int(channel) not in bad_channels)
+                 for channel in ntrode['map']]
             )
         return electrodes_valid_map
 
     @beartype
     def __get_electrode_groups_valid_map(self, ntrode_metadata: list,
                                          electrodes_valid_map: list) -> set:
-        tmp_electrodes_valid_map = copy.deepcopy(electrodes_valid_map)
         return {
             ntrode['electrode_group_id'] for ntrode in ntrode_metadata
         }
@@ -82,6 +82,5 @@ class CorruptedDataManager:
             if probe_type:
                 corrupted_data = False
         if corrupted_data:
-            raise CorruptedDataException('There is no valid data to create probe')
-
-
+            raise CorruptedDataException(
+                'There is no valid data to create probe')
